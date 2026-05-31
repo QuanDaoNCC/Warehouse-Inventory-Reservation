@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# Warehouse-Inventory-Reservation
-=======
 # Warehouse Inventory Reservation System
 
 Challenge 1 implementation — a concurrent-safe REST API for reserving warehouse inventory.
