@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-products
+      author: warehouse
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/001-create-products.sql
+            relativeToChangelogFile: false
+            splitStatements: true
+  - changeSet:
+      id: 002-create-inventory
+      author: warehouse
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/002-create-inventory.sql
+            relativeToChangelogFile: false
+            splitStatements: true
+  - changeSet:
+      id: 003-create-reservations
+      author: warehouse
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/003-create-reservations.sql
+            relativeToChangelogFile: false
+            splitStatements: true
+  - changeSet:
+      id: 004-seed-data
+      author: warehouse
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/004-seed-data.sql
+            relativeToChangelogFile: false
+            splitStatements: true
