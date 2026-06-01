@@ -41,6 +41,7 @@ public final class DomainMapper {
         reservation.setOrderId(entity.getOrderId());
         reservation.setStatus(entity.getStatus());
         reservation.setCreatedAt(entity.getCreatedAt());
+        reservation.setUpdatedAt(entity.getUpdatedAt());
 
         List<ReservationItem> items = new ArrayList<>();
         for (ReservationItemEntity itemEntity : entity.getItems()) {
@@ -61,6 +62,7 @@ public final class DomainMapper {
         entity.setOrderId(domain.getOrderId());
         entity.setStatus(domain.getStatus());
         entity.setCreatedAt(domain.getCreatedAt());
+        entity.setUpdatedAt(domain.getUpdatedAt() == null ? domain.getCreatedAt() : domain.getUpdatedAt());
 
         List<ReservationItemEntity> items = new ArrayList<>();
         for (ReservationItem item : domain.getItems()) {

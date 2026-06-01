@@ -17,10 +17,13 @@ class ReservationStateTest {
 
         reservation.confirm();
         assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CONFIRMED);
+        assertThat(reservation.getUpdatedAt()).isNotNull();
 
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setUpdatedAt(null);
         reservation.cancel();
         assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.CANCELLED);
+        assertThat(reservation.getUpdatedAt()).isNotNull();
     }
 
     @Test

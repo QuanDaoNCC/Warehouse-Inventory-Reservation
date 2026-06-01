@@ -29,6 +29,11 @@ public class ReservationRepositoryAdapter implements ReservationRepositoryPort {
     }
 
     @Override
+    public boolean existsByOrderId(String orderId) {
+        return repository.existsByOrderId(orderId);
+    }
+
+    @Override
     public Reservation save(Reservation reservation) {
         return DomainMapper.toDomain(repository.save(DomainMapper.toEntity(reservation)));
     }

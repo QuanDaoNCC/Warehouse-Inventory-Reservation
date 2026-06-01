@@ -4,6 +4,7 @@ import com.warehouse.application.dto.CreateReservationRequest;
 import com.warehouse.application.dto.ReservationItemRequest;
 import com.warehouse.application.port.InventoryRepositoryPort;
 import com.warehouse.application.port.ReservationRepositoryPort;
+import com.warehouse.domain.exception.DuplicateOrderReservationException;
 import com.warehouse.domain.exception.InsufficientStockException;
 import com.warehouse.domain.exception.InvalidStateTransitionException;
 import com.warehouse.domain.exception.InventoryNotFoundException;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,6 +116,23 @@ class ReservationServiceTest {
 
         assertThatThrownBy(() -> reservationService.createReservation(request))
                 .isInstanceOf(InventoryNotFoundException.class);
+    }
+
+    @Test
+    void createReservation_rejectsDuplicateOrderIdBeforeLockingInventory() {
+        CreateReservationRequest request = new CreateReservationRequest(
+                "ORD-EXISTING",
+                List.of(new ReservationItemRequest("A100", 1))
+        );
+
+        when(reservationRepository.existsByOrderId("ORD-EXISTING")).thenReturn(true);
+
+        assertThatThrownBy(() -> reservationService.createReservation(request))
+                .isInstanceOf(DuplicateOrderReservationException.class)
+                .hasMessageContaining("ORD-EXISTING");
+
+        verifyNoInteractions(inventoryRepository);
+        verify(reservationRepository, never()).save(any());
     }
 
     @Test
@@ -235,6 +254,7 @@ class ReservationServiceTest {
         reservation.setOrderId(orderId);
         reservation.setStatus(ReservationStatus.PENDING);
         reservation.setCreatedAt(Instant.now());
+        reservation.setUpdatedAt(Instant.now());
 
         ReservationItem item = new ReservationItem();
         item.setSku(sku);

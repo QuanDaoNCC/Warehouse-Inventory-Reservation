@@ -29,7 +29,7 @@ HTTP Request → Controller → ReservationService → Repository Port → JPA A
 - **Domain layer** holds pure business logic (`Reservation`, `Inventory`, state transitions).
 - **Application layer** orchestrates use cases and depends only on ports (interfaces), not JPA.
 - **Infrastructure layer** implements ports and maps between JPA entities and domain models.
-- **API layer** handles HTTP concerns and translates exceptions to structured error responses.
+- **API layer** handles HTTP concerns and returns structured `{ data, error }` responses with stable error codes.
 
 This separation keeps business rules testable without a Spring context and allows swapping persistence without touching domain code.
 
@@ -74,7 +74,7 @@ Centralises construction of new reservations with consistent defaults.
 |-------|---------|
 | `products` | Master product catalogue (SKU, name, description) |
 | `inventory` | Stock levels per SKU: total, available, reserved |
-| `reservations` | Reservation header: UUID id, order ID, status, created_at |
+| `reservations` | Reservation header: UUID id, unique order ID, status, created_at, updated_at |
 | `reservation_items` | Line items: reservation_id, SKU, quantity |
 
 ### Key decisions
@@ -83,7 +83,8 @@ Centralises construction of new reservations with consistent defaults.
 - **Separate inventory table** — stock is updated independently of product metadata.
 - **`available_stock` + `reserved_stock`** — explicit tracking; `total_stock` is the ceiling.
 - **`version` column** on inventory — optimistic locking as a secondary safety net alongside pessimistic locks.
-- **CHECK constraints** — prevent negative stock at the database level.
+- **CHECK constraints** — prevent negative stock and enforce `available_stock + reserved_stock <= total_stock`.
+- **Unique order IDs** — prevent duplicate reservations for the same upstream order.
 - **Indexes** on `order_id` and `reservation_id` for lookup performance.
 - **Liquibase SQL changesets** — all schema changes in versioned `.sql` files under `src/main/resources/db/changelog/changes/`.
 
@@ -105,6 +106,8 @@ docker compose up --build
 ```
 
 This starts PostgreSQL, runs Liquibase migrations, seeds sample data, and launches the Spring Boot app on **http://localhost:8080**.
+
+OpenAPI documentation is available at **http://localhost:8080/swagger-ui/index.html**.
 
 ### Example API calls
 
@@ -136,6 +139,20 @@ curl http://localhost:8080/api/v1/inventory/A100
 ```
 
 ### Error responses
+
+All API responses use the same envelope:
+
+```json
+{
+  "data": null,
+  "error": {
+    "code": "INSUFFICIENT_STOCK",
+    "status": 409,
+    "message": "Insufficient stock for SKU A100: requested 5, available 3",
+    "timestamp": "2026-06-01T00:00:00Z"
+  }
+}
+```
 
 | HTTP Status | Scenario |
 |-------------|----------|
@@ -197,6 +214,6 @@ mvn test -Dtest="ConcurrentReservationIT"
 - PostgreSQL 16 (Docker)
 - Spring Data JPA
 - Liquibase (SQL changesets only)
+- Springdoc OpenAPI
 - Maven
 - JUnit 5 + Mockito + Testcontainers
->>>>>>> f42712c (Initial Commit Warehouse Inventory Reservation)

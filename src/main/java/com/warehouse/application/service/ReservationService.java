@@ -5,6 +5,7 @@ import com.warehouse.application.dto.InventoryResponse;
 import com.warehouse.application.dto.ReservationResponse;
 import com.warehouse.application.port.InventoryRepositoryPort;
 import com.warehouse.application.port.ReservationRepositoryPort;
+import com.warehouse.domain.exception.DuplicateOrderReservationException;
 import com.warehouse.domain.exception.InsufficientStockException;
 import com.warehouse.domain.exception.InventoryNotFoundException;
 import com.warehouse.domain.exception.ReservationNotFoundException;
@@ -41,6 +42,10 @@ public class ReservationService {
 
     @Transactional
     public ReservationResponse createReservation(CreateReservationRequest request) {
+        if (reservationRepository.existsByOrderId(request.orderId())) {
+            throw new DuplicateOrderReservationException(request.orderId());
+        }
+
         Map<String, Integer> quantitiesBySku = aggregateQuantities(request);
 
         List<String> sortedSkus = quantitiesBySku.keySet().stream()

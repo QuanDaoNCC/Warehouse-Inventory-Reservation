@@ -31,3 +31,11 @@ databaseChangeLog:
             path: db/changelog/changes/004-seed-data.sql
             relativeToChangelogFile: false
             splitStatements: true
+  - changeSet:
+      id: 005-add-reservation-audit-and-constraints
+      author: warehouse
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/005-add-reservation-audit-and-constraints.sql
+            relativeToChangelogFile: false
+            splitStatements: true

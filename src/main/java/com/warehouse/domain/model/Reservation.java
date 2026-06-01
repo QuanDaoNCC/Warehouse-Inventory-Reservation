@@ -14,6 +14,7 @@ public class Reservation {
     private String orderId;
     private ReservationStatus status;
     private Instant createdAt;
+    private Instant updatedAt;
     private List<ReservationItem> items = new ArrayList<>();
 
     public UUID getId() {
@@ -48,6 +49,14 @@ public class Reservation {
         this.createdAt = createdAt;
     }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public List<ReservationItem> getItems() {
         return items;
     }
@@ -75,6 +84,7 @@ public class Reservation {
 
     public void transitionTo(ReservationStatus newStatus) {
         this.status = newStatus;
+        this.updatedAt = Instant.now();
     }
 
     private ReservationState currentState() {

@@ -11,5 +11,7 @@ public interface ReservationRepositoryPort {
 
     Optional<Reservation> findByIdForUpdate(UUID id);
 
+    boolean existsByOrderId(String orderId);
+
     Reservation save(Reservation reservation);
 }

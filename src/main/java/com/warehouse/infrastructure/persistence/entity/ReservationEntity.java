@@ -24,7 +24,7 @@ public class ReservationEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "order_id", nullable = false, length = 100)
+    @Column(name = "order_id", nullable = false, length = 100, unique = true)
     private String orderId;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +33,9 @@ public class ReservationEntity {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ReservationItemEntity> items = new ArrayList<>();
@@ -67,6 +70,14 @@ public class ReservationEntity {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<ReservationItemEntity> getItems() {

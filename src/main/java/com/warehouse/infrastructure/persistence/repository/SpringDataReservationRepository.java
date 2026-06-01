@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public interface SpringDataReservationRepository extends JpaRepository<ReservationEntity, UUID> {
 
+    boolean existsByOrderId(String orderId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM ReservationEntity r WHERE r.id = :id")
     Optional<ReservationEntity> findByIdForUpdate(@Param("id") UUID id);

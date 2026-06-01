@@ -12,6 +12,7 @@ public record ReservationResponse(
         String orderId,
         ReservationStatus status,
         Instant createdAt,
+        Instant updatedAt,
         List<ReservationItemResponse> items
 ) {
 
@@ -24,6 +25,7 @@ public record ReservationResponse(
                 reservation.getOrderId(),
                 reservation.getStatus(),
                 reservation.getCreatedAt(),
+                reservation.getUpdatedAt(),
                 items
         );
     }
